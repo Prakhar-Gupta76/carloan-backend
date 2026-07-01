@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { RESPONSE_MESSAGES } from './common/constants/response.constants';
 import { ApiResponseHelper } from './common/helpers/api-response.helper';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
@@ -15,11 +16,11 @@ async function bootstrap() {
       transform: true,
       exceptionFactory: (errors) =>
         new BadRequestException(
-          ApiResponseHelper.error('Validation failed', errors),
+          ApiResponseHelper.error(RESPONSE_MESSAGES.VALIDATION_FAILED, errors),
         ),
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(Number(process.env.PORT));
 }
 bootstrap();

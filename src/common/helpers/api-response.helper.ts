@@ -1,7 +1,12 @@
+import {
+  RESPONSE_MESSAGES,
+  RESPONSE_STATUS,
+} from '../constants/response.constants';
+
 export class ApiResponseHelper {
   static ok<T>(message = '', data: T[] = []) {
     return {
-      status: 'ok',
+      status: RESPONSE_STATUS.OK,
       message,
       data,
     };
@@ -9,7 +14,7 @@ export class ApiResponseHelper {
 
   static error(message = '', error: unknown = null) {
     return {
-      status: 'error',
+      status: RESPONSE_STATUS.ERROR,
       message,
       error,
     };
@@ -17,8 +22,8 @@ export class ApiResponseHelper {
 
   static internalServerError(error: unknown = null) {
     return {
-      status: 'internal server error',
-      message: 'Something went wrong. Please try later',
+      status: RESPONSE_STATUS.INTERNAL_SERVER_ERROR,
+      message: RESPONSE_MESSAGES.SOMETHING_WENT_WRONG,
       error,
     };
   }

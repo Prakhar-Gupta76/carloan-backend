@@ -7,11 +7,9 @@ import { UserModule } from './user/user.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
+      isGlobal: true
     }),
-    MongooseModule.forRoot(
-      process.env.MONGODB_URI ?? 'mongodb://127.0.0.1:27017/car-loan',
-    ),
+    MongooseModule.forRoot(process.env.MONGO_URI ?? '', {}),
     AuthModule,
     UserModule,
   ],
