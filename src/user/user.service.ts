@@ -27,11 +27,29 @@ export class UserService {
   }
 
   async saveUser(saveUserDto: SaveUserDto) {
-    await this.userModel.create({
-      mobile_number: saveUserDto.mobile_number,
-      name: saveUserDto.name,
-    });
+    const existingUser = await this.userModel
+      .findOne({ mobile_number: saveUserDto.mobile_number })
+      .exec();
+
+    if (!existingUser) {
+      await this.userModel.create({
+        mobile_number: saveUserDto.mobile_number,
+        name: saveUserDto.name,
+      });
+
+      return ApiResponseHelper.ok(RESPONSE_MESSAGES.USER_RECORD_CREATED, []);
+    }
+
+    const { mobile_number, ...updatePayload } = saveUserDto
+
+    await this.userModel.updateOne(
+      { mobile_number: mobile_number },
+      {
+        $set: updatePayload,
+      },
+    );
 
     return ApiResponseHelper.ok(RESPONSE_MESSAGES.USER_RECORD_CREATED, []);
   }
+
 }

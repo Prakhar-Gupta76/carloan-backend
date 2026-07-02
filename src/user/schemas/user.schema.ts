@@ -8,10 +8,9 @@ export type UserDocument = HydratedDocument<User>;
 })
 export class User {
   @Prop({
-    required: true,
     trim: true,
   })
-  name: string;
+  name?: string;
 
   @Prop({
     required: true,
@@ -19,6 +18,31 @@ export class User {
     unique: true,
   })
   mobile_number: string;
+
+  @Prop({
+    trim: true,
+  })
+  pan?: string;
+
+  @Prop({
+    trim: true,
+  })
+  permanent_address?: string;
+
+  @Prop()
+  salary?: number;
+
+  @Prop()
+  age?: number;
+
+  @Prop()
+  current_company_duration?: number;
+
+  @Prop()
+  loan_amount?: number;
+
+  @Prop()
+  loan_tenure?: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
