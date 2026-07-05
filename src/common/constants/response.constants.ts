@@ -15,6 +15,8 @@ export const RESPONSE_MESSAGES = {
   USER_NOT_FOUND: 'User not found',
   USER_DETAILS_FETCHED_SUCCESSFULLY: 'User details fetched successfully',
   USER_RECORD_CREATED: 'User record created successfully',
+  BANK_LOAN_DETAILS_FETCHED_SUCCESSFULLY:
+    'Bank Loan Details Fetched Successfully',
 } as const;
 
 export const OTP_VERIFICATION_STATUS = {
