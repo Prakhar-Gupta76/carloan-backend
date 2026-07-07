@@ -13,10 +13,15 @@ export const RESPONSE_MESSAGES = {
   VALIDATION_FAILED: 'Validation failed',
   SOMETHING_WENT_WRONG: 'Something went wrong. Please try later',
   USER_NOT_FOUND: 'User not found',
+  USER_DETAILS_NOT_FOUND: 'User details not found',
   USER_DETAILS_FETCHED_SUCCESSFULLY: 'User details fetched successfully',
   USER_RECORD_CREATED: 'User record created successfully',
   BANK_LOAN_DETAILS_FETCHED_SUCCESSFULLY:
     'Bank Loan Details Fetched Successfully',
+  CHECKS_FAILED: 'Checks failed',
+  DATA_FIELDS_PROVIDED_NOT_CORRECT: 'Data Field(s) provided not correct',
+  VERIFICATION_DETAILS_FETCHED_SUCCESSFULLY:
+    'Verification details fetched successfully',
 } as const;
 
 export const OTP_VERIFICATION_STATUS = {

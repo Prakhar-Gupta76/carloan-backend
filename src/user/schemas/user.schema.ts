@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -43,6 +43,26 @@ export class User {
 
   @Prop()
   loan_tenure?: number;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+  })
+  account_aggregator_response?: Record<string, unknown>;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+  })
+  epfo_response?: Record<string, unknown>;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+  })
+  credit_bureau_credit_score_response?: Record<string, unknown>;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+  })
+  credit_bureau_existing_emis_response?: Record<string, unknown>;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
