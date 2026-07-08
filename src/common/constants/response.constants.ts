@@ -22,6 +22,12 @@ export const RESPONSE_MESSAGES = {
   DATA_FIELDS_PROVIDED_NOT_CORRECT: 'Data Field(s) provided not correct',
   VERIFICATION_DETAILS_FETCHED_SUCCESSFULLY:
     'Verification details fetched successfully',
+  DOB_CHECKS_FAILED: 'checks failed',
+  DOB_CHECKS_PASSED: 'checks passed',
+  IDENTITY_PROOF_REQUIRED: 'Identity proof image is required',
+  INVALID_IDENTITY_PROOF_FILE: 'Identity proof file must be an image',
+  DOB_EXTRACTION_FAILED: 'Date of birth could not be extracted from image',
+  USER_AGE_NOT_FOUND: 'User age is not available',
 } as const;
 
 export const OTP_VERIFICATION_STATUS = {

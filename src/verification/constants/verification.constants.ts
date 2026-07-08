@@ -4,6 +4,12 @@ export const VERIFICATION_CONSENT = {
   FREQUENCY: 'ONETIME',
 } as const;
 
+export enum IdentityProofType {
+  AADHAR_CARD = 'AADHAR_CARD',
+  PAN_CARD = 'PAN_CARD',
+  VOTER_ID_CARD = 'VOTER_ID_CARD',
+}
+
 export const VERIFICATION_DATA_TYPES = {
   BANK_STATEMENT: 'BANK_STATEMENT',
   EMPLOYMENT_HISTORY: 'EMPLOYMENT_HISTORY',
@@ -35,4 +41,16 @@ export const VERIFICATION_FAILURES = {
     errCode: 'EMP01',
     message: 'Employment Duration is less than minimum threshold.',
   },
+} as const;
+
+export const DOB_VERIFICATION_FAILURES = {
+  AGE_INCORRECT: {
+    errCode: 'AGE01',
+    message: 'Age input is incorrect',
+  },
+} as const;
+
+export const DOB_VERIFICATION_SUCCESS = {
+  status: 'Validated',
+  message: 'Age is validated',
 } as const;

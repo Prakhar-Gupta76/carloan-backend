@@ -1,7 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AxiosError } from 'axios';
 import { Model } from 'mongoose';
+import sharp from 'sharp';
+import { recognize } from 'tesseract.js';
 import {
   RESPONSE_MESSAGES,
   RESPONSE_STATUS,
@@ -10,12 +16,15 @@ import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { AxiosHelper } from '../common/helpers/axios.helper';
 import { User } from '../user/schemas/user.schema';
 import {
+  DOB_VERIFICATION_FAILURES,
+  DOB_VERIFICATION_SUCCESS,
   INSPECTION_RESPONSE_STATUS,
   VERIFICATION_CONSENT,
   VERIFICATION_DATA_TYPES,
   VERIFICATION_ENDPOINTS,
   VERIFICATION_FAILURES,
 } from './constants/verification.constants';
+import { VerifyDobDto } from './dto/verify-dob.dto';
 import { VerifyDetailsDto } from './dto/verify-details.dto';
 import {
   AccountAggregatorResponseData,
@@ -149,6 +158,73 @@ export class VerificationService {
       status: RESPONSE_STATUS.OK,
       message: RESPONSE_MESSAGES.VERIFICATION_DETAILS_FETCHED_SUCCESSFULLY,
     };
+  }
+
+  async verifyDOB(
+    verifyDobDto: VerifyDobDto,
+    documentFile?: Express.Multer.File,
+  ) {
+    if (!documentFile) {
+      throw new BadRequestException(
+        ApiResponseHelper.error(RESPONSE_MESSAGES.IDENTITY_PROOF_REQUIRED),
+      );
+    }
+
+    if (!documentFile.mimetype?.startsWith('image/')) {
+      throw new BadRequestException(
+        ApiResponseHelper.error(RESPONSE_MESSAGES.INVALID_IDENTITY_PROOF_FILE),
+      );
+    }
+
+    const user = await this.userModel
+      .findOne({ mobile_number: verifyDobDto.mobile_number })
+      .exec();
+
+    if (!user) {
+      throw new BadRequestException(
+        ApiResponseHelper.error(RESPONSE_MESSAGES.USER_DETAILS_NOT_FOUND),
+      );
+    }
+
+    await this.userModel
+      .updateOne(
+        { mobile_number: verifyDobDto.mobile_number },
+        {
+          $set: {
+            identity_proof_type: verifyDobDto.document_type,
+            identity_proof_file: this.getIdentityProofFileMetadata(documentFile),
+          },
+        },
+      )
+      .exec();
+
+    try {
+      const dateOfBirth = await this.extractDateOfBirth(documentFile);
+
+      if (!dateOfBirth) {
+        throw new BadRequestException(
+          ApiResponseHelper.error(RESPONSE_MESSAGES.DOB_EXTRACTION_FAILED),
+        );
+      }
+
+      const ageFromDocument = this.calculateAge(dateOfBirth);
+
+      if (ageFromDocument !== user.age) {
+        return ApiResponseHelper.ok(RESPONSE_MESSAGES.DOB_CHECKS_FAILED, [
+          DOB_VERIFICATION_FAILURES.AGE_INCORRECT,
+        ]);
+      }
+
+      return ApiResponseHelper.ok(RESPONSE_MESSAGES.DOB_CHECKS_PASSED, [
+        DOB_VERIFICATION_SUCCESS,
+      ]);
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(error);
+    }
   }
 
   private async callInspectionApi<T = unknown>(
@@ -328,5 +404,72 @@ export class VerificationService {
 
   private normalizeCompanyName(company?: string) {
     return company?.trim().toLowerCase() ?? '';
+  }
+
+  private getIdentityProofFileMetadata(documentFile: Express.Multer.File) {
+    return {
+      original_name: documentFile.originalname,
+      mime_type: documentFile.mimetype,
+      size: documentFile.size,
+    };
+  }
+
+  private async extractDateOfBirth(documentFile: Express.Multer.File) {
+    const imageBuffer = await sharp(documentFile.buffer)
+      .grayscale()
+      .normalize()
+      .resize({ width: 1600, withoutEnlargement: true })
+      .png()
+      .toBuffer();
+    const ocrResult = await recognize(imageBuffer, 'eng');
+
+    return this.findDateOfBirth(ocrResult.data.text);
+  }
+
+  private findDateOfBirth(text = '') {
+    const match = text.match(/\b(\d{2})\s*\/\s*(\d{2})\s*\/\s*(\d{4})\b/);
+
+    if (!match) {
+      return null;
+    }
+
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const year = Number(match[3]);
+
+    return this.createValidDate(year, month, day);
+  }
+
+  private createValidDate(year: number, month: number, day: number) {
+    if (!year || !month || !day) {
+      return null;
+    }
+
+    const date = new Date(year, month - 1, day);
+
+    if (
+      date.getFullYear() !== year ||
+      date.getMonth() !== month - 1 ||
+      date.getDate() !== day
+    ) {
+      return null;
+    }
+
+    return date;
+  }
+
+  private calculateAge(dateOfBirth: Date) {
+    const today = new Date();
+    let age = today.getFullYear() - dateOfBirth.getFullYear();
+    const hasBirthdayPassed =
+      today.getMonth() > dateOfBirth.getMonth() ||
+      (today.getMonth() === dateOfBirth.getMonth() &&
+        today.getDate() >= dateOfBirth.getDate());
+
+    if (!hasBirthdayPassed) {
+      age -= 1;
+    }
+
+    return age;
   }
 }

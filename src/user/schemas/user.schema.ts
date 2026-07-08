@@ -45,6 +45,16 @@ export class User {
   loan_tenure?: number;
 
   @Prop({
+    trim: true,
+  })
+  identity_proof_type?: string;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+  })
+  identity_proof_file?: Record<string, unknown>;
+
+  @Prop({
     type: MongooseSchema.Types.Mixed,
   })
   account_aggregator_response?: Record<string, unknown>;
