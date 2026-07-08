@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RESPONSE_MESSAGES } from '../common/constants/response.constants';
 import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { GetUserDto } from './dto/get-user.dto';
+import { SaveDrivingLicenseDto } from './dto/save-driving-license.dto';
 import { SaveUserDto } from './dto/save-user.dto';
 import { User } from './schemas/user.schema';
 
@@ -50,6 +51,48 @@ export class UserService {
     );
 
     return ApiResponseHelper.ok(RESPONSE_MESSAGES.USER_RECORD_CREATED, []);
+  }
+
+  async saveDrivingLicense(
+    saveDrivingLicenseDto: SaveDrivingLicenseDto,
+    drivingLicenseFile?: Express.Multer.File,
+  ) {
+    if (!drivingLicenseFile) {
+      throw new BadRequestException(
+        ApiResponseHelper.error(RESPONSE_MESSAGES.DRIVING_LICENSE_REQUIRED),
+      );
+    }
+
+    if (!drivingLicenseFile.mimetype?.startsWith('image/')) {
+      throw new BadRequestException(
+        ApiResponseHelper.error(RESPONSE_MESSAGES.INVALID_DRIVING_LICENSE_FILE),
+      );
+    }
+
+    await this.userModel
+      .updateOne(
+        { mobile_number: saveDrivingLicenseDto.mobile_number },
+        {
+          $set: {
+            driving_license_file:
+              this.getDrivingLicenseFilePayload(drivingLicenseFile),
+          },
+        },
+      )
+      .exec();
+
+    return ApiResponseHelper.ok(RESPONSE_MESSAGES.USER_RECORD_CREATED, []);
+  }
+
+  private getDrivingLicenseFilePayload(
+    drivingLicenseFile: Express.Multer.File,
+  ) {
+    return {
+      original_name: drivingLicenseFile.originalname,
+      mime_type: drivingLicenseFile.mimetype,
+      size: drivingLicenseFile.size,
+      data: drivingLicenseFile.buffer,
+    };
   }
 
 }

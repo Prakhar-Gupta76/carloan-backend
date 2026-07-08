@@ -57,6 +57,11 @@ export class User {
   @Prop({
     type: MongooseSchema.Types.Mixed,
   })
+  driving_license_file?: Record<string, unknown>;
+
+  @Prop({
+    type: MongooseSchema.Types.Mixed,
+  })
   account_aggregator_response?: Record<string, unknown>;
 
   @Prop({

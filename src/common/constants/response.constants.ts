@@ -28,6 +28,8 @@ export const RESPONSE_MESSAGES = {
   INVALID_IDENTITY_PROOF_FILE: 'Identity proof file must be an image',
   DOB_EXTRACTION_FAILED: 'Date of birth could not be extracted from image',
   USER_AGE_NOT_FOUND: 'User age is not available',
+  DRIVING_LICENSE_REQUIRED: 'Driving license file is required',
+  INVALID_DRIVING_LICENSE_FILE: 'Driving license file must be an image',
 } as const;
 
 export const OTP_VERIFICATION_STATUS = {
