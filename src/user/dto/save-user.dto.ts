@@ -61,4 +61,9 @@ export class SaveUserDto {
   @Type(() => Number)
   @IsNumber()
   loan_tenure?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  loan_monthly_emi?: number;
 }

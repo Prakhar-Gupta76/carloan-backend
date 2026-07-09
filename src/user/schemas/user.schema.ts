@@ -44,6 +44,9 @@ export class User {
   @Prop()
   loan_tenure?: number;
 
+  @Prop()
+  loan_monthly_emi?: number;
+
   @Prop({
     trim: true,
   })
