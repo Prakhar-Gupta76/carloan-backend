@@ -47,6 +47,12 @@ export class User {
   @Prop()
   loan_monthly_emi?: number;
 
+  @Prop()
+  loan_bank?: string;
+
+  @Prop()
+  loan_interest_rate?: number;
+
   @Prop({
     trim: true,
   })

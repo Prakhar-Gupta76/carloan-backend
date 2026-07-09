@@ -66,4 +66,13 @@ export class SaveUserDto {
   @Type(() => Number)
   @IsNumber()
   loan_monthly_emi?: number;
+
+  @IsOptional()
+  @IsString()
+  loan_bank?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  loan_interest_rate?: number;
 }
