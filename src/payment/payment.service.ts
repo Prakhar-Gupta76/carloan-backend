@@ -82,7 +82,7 @@ export class PaymentService {
   }
 
   private getFrontendUrl() {
-    return (process.env.FRONTEND_URL).replace(
+    return (process.env.FRONTEND_URL || "http://localhost:3000/").replace(
       /\/$/,
       '',
     );
