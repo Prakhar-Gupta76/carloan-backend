@@ -30,6 +30,8 @@ export const RESPONSE_MESSAGES = {
   USER_AGE_NOT_FOUND: 'User age is not available',
   DRIVING_LICENSE_REQUIRED: 'Driving license file is required',
   INVALID_DRIVING_LICENSE_FILE: 'Driving license file must be an image',
+  PAYMENT_SESSION_CREATED: 'Payment session created successfully',
+  LOAN_MONTHLY_EMI_NOT_FOUND: 'Loan monthly EMI is not available',
 } as const;
 
 export const OTP_VERIFICATION_STATUS = {
